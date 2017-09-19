@@ -188,7 +188,7 @@ public class FileChooser implements ActionListener{
                 bw.newLine();
                 for (int i = 0; i < rowCount; i++) {
                     DataItem di = listOfData.get(i);
-                    bw.write(di.getItemno() + ", " + di.getDesc() + ", " +
+                    bw.write("'" + di.getItemno() + ", " + di.getDesc() + ", " +
                             di.getQuantity() + ", " + di.getPacking() + ", " +
                             di.getPrice());
                     bw.newLine();
