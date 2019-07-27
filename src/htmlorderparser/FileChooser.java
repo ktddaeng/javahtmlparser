@@ -26,7 +26,7 @@ public class FileChooser implements ActionListener{
     private JTextArea textArea;
     private JComboBox<String> vendorSelect;
     private File path;
-    private String[] vendors = new String[] {"Bargin Wholesale", "JC Sales"};
+    private String[] vendors = new String[] {"Bargain Wholesale", "JC Sales", "4 Seasons"};
     private ArrayList<DataItem> listOfData;
     
     final static boolean RIGHT_TO_LEFT = false;
@@ -74,7 +74,7 @@ public class FileChooser implements ActionListener{
         b.addActionListener(this);
         pane.add(b, c);
         
-        b2 = new JButton("Load Data");
+        b2 = new JButton("Extract Data");
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
         c.gridx = 2;
@@ -184,13 +184,20 @@ public class FileChooser implements ActionListener{
             BufferedWriter bw = new BufferedWriter(fw);
             int rowCount = listOfData.size();
             if (rowCount > 0) {
-                bw.write("SKU, Description, Quantity, Packing Price, Price");
+                if (vendorSelect.getSelectedIndex() == 2) {
+                    bw.write("SKU, Description, Quantity, Packing Qty, Packing Price, Price");
+                } else {
+                    bw.write("SKU, Description, Quantity, Packing Price, Price");
+                }
                 bw.newLine();
                 for (int i = 0; i < rowCount; i++) {
                     DataItem di = listOfData.get(i);
-                    bw.write("'" + di.getItemno() + ", " + di.getDesc() + ", " +
+                    bw.write(di.getItemno() + ", " + di.getDesc() + ", " +
                             di.getQuantity() + ", " + di.getPacking() + ", " +
                             di.getPrice());
+                    if (vendorSelect.getSelectedIndex() == 2) {
+                        bw.write(", " + di.getSubtotal());
+                    }
                     bw.newLine();
                 }
                 bw.flush();

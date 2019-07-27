@@ -15,6 +15,7 @@ public class DataItem {
     private String price;   //unit price
     private String packing; //items per pack
     private String quantity;
+    private String subtotal;
 
     public DataItem() {
         desc = "";
@@ -22,6 +23,7 @@ public class DataItem {
         price = "";
         quantity = "";
         packing = "";
+        subtotal = "";
     }
 
     public DataItem(String desc, String itemno, String price, String quantity, String packing) {
@@ -30,6 +32,15 @@ public class DataItem {
         this.price = price;
         this.packing = packing;
         this.quantity = quantity;
+    }
+    
+    public DataItem(String desc, String itemno, String price, String quantity, String packing, String subtotal) {
+        this.desc = desc;
+        this.itemno = itemno;
+        this.price = price;
+        this.packing = packing;
+        this.quantity = quantity;
+        this.subtotal = subtotal;
     }
 
     public String getDesc() {
@@ -70,5 +81,13 @@ public class DataItem {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }    
+    
+    public String getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(String subtotal) {
+        this.subtotal = subtotal;
     }
 }

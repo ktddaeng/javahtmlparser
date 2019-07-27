@@ -46,6 +46,7 @@ public class HTMLParser {
         List<String> listOfQty = new ArrayList<String>();
         List<String> listOfPrices = new ArrayList<String>();
         List<String> listOfPacking = new ArrayList<String>();
+        List<String> listOfSubtotals = new ArrayList<String>();
         
         /*
          * shoppingcart_item_name
@@ -72,27 +73,47 @@ public class HTMLParser {
                 }
                     //make sure to account for special elements
                 listOfPrices = document.getElementsByClass("cartTotal").eachText();
-;               break;
-            case 1:
-            default:
+                break;
+            case 1: //JC
                 list1 = document.getElementsByClass("cart-item-description");
                 list2 = document.getElementsByClass("cart-item-no");
                 list3 = document.getElementsByClass("cart-item-quantity-input");
                 list4 = document.getElementsByClass("cart-item-price");
                 list5 = document.getElementsByClass("cart-item-subtotal");
                 for (int j = 1; j < list1.size(); j++){
-                    Elements list0 = list1.get(j).getElementsByTag("a");
+                    Elements list0 = list1.get(j).getElementsByTag("span");
                     listOfNames.add(list1.get(j).text());
                     list0 = list2.get(j).getElementsByTag("span");
-                    listOfSKU.add(list2.get(j).text());
+                    listOfSKU.add(list0.get(0).text());
                     list0 = list3.get(j).getElementsByTag("input");
                     listOfQty.add(list0.get(0).val());
                     list0 = list4.get(j).getElementsByTag("span");
-                    listOfPacking.add(list4.get(j).text());
+                    listOfPacking.add(list0.get(0).text());
                     list0 = list5.get(j).getElementsByTag("span");
-                    listOfPrices.add(list5.get(j).text());
+                    listOfPrices.add(list0.get(0).text());
                 }
-                break; //JC
+                break;
+            case 2: //4Seasons
+                listOfNames = document.getElementsByClass("shoppingcart_item_name").eachText();
+                System.out.println(listOfNames.size());
+                listOfSKU = document.getElementsByClass("shoppingcart_item_sku").eachText();
+                listOfSubtotals = document.getElementsByClass("cartTotal").eachText();
+                list1 = document.getElementsByClass("cartQty");
+                list2 = document.getElementsByClass("cartPrice");
+                System.out.println(listOfSKU.size());
+                System.out.println(list1.size());
+                
+                for (int j = 0; j < list1.size(); j++) {
+                    //get quantity input value (3rd in list of inputs)
+                    Elements list0 = list1.get(j).getElementsByTag("input");
+                    listOfQty.add(list0.get(2).val());
+                    //pack size (first in ever 4 divs)
+                    listOfPacking.add(list2.get(j * 4).text());
+                    //price (third in every 4 divs)
+                    listOfPrices.add(list2.get(j * 4 + 2).text());
+                }
+            default:                
+                break;
         }
         
         //check if null, meaning the document is wrongly attributed
@@ -119,8 +140,19 @@ public class HTMLParser {
                     di.setQuantity(listOfQty.get(i));
                     di.setPacking(listOfPacking.get(i));
                     break;
+                case 2:
+                    di.setItemno(listOfSKU.get(i));
+                    String s = listOfNames.get(i);
+                    di.setDesc(s.replace(",", " "));
+                    di.setPrice(listOfPrices.get(i).substring(1));
+                    di.setQuantity(listOfQty.get(i));
+                    di.setPacking(listOfPacking.get(i));
+                    di.setSubtotal(listOfSubtotals.get(i).substring(1));
             }
-            textArea.setText(textArea.getText() + "\n" + di.getItemno() + ", " + di.getDesc() + ", " + di.getQuantity() + ", " + di.getPacking() + ", " + di.getPrice());
+            textArea.setText(textArea.getText() + "\n" + (i + 1) + ": " + di.getItemno() + ", "
+                    + di.getDesc() + ", " + di.getQuantity() + ", "
+                    + di.getPacking() + ", " + di.getPrice()
+                    + ", " + di.getSubtotal());
             listOfData.add(di);
         }
         
