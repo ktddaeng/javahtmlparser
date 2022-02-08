@@ -8,6 +8,8 @@ package htmlorderparser;
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
@@ -69,28 +71,25 @@ public class HTMLParser {
                 list2 = document.getElementsByClass("cartQty");
                 for(int j = 0; j < list2.size(); j++){
                     list3 = list2.get(j).getElementsByTag("input");
-                    listOfQty.add(list3.get(2).val());
+                    listOfQty.add(list3.get(3).val());
                 }
                     //make sure to account for special elements
                 listOfPrices = document.getElementsByClass("cartTotal").eachText();
                 break;
             case 1: //JC
-                list1 = document.getElementsByClass("cart-item-description");
-                list2 = document.getElementsByClass("cart-item-no");
-                list3 = document.getElementsByClass("cart-item-quantity-input");
-                list4 = document.getElementsByClass("cart-item-price");
-                list5 = document.getElementsByClass("cart-item-subtotal");
+                list1 = document.getElementsByClass("cart-table__product-name");
+                list2 = document.getElementsByClass("cart-table__column--product");
+                list3 = document.getElementsByClass("cart-item-quantity");
+                list4 = document.getElementsByClass("cart-table__price");
+                list5 = document.getElementsByClass("cart-table__column--total");
                 for (int j = 1; j < list1.size(); j++){
-                    Elements list0 = list1.get(j).getElementsByTag("span");
-                    listOfNames.add(list1.get(j).text());
-                    list0 = list2.get(j).getElementsByTag("span");
+                    listOfNames.add(list1.get(j - 1).text());
+                    Elements list0 = list2.get(j).getElementsByTag("span");
                     listOfSKU.add(list0.get(0).text());
-                    list0 = list3.get(j).getElementsByTag("input");
-                    listOfQty.add(list0.get(0).val());
-                    list0 = list4.get(j).getElementsByTag("span");
-                    listOfPacking.add(list0.get(0).text());
-                    list0 = list5.get(j).getElementsByTag("span");
-                    listOfPrices.add(list0.get(0).text());
+                    listOfQty.add(list3.get(j - 1).val());
+                    list0 = list4.get(j - 1).getElementsByClass("unit-price");
+                    listOfPacking.add(list0.get(1).text());
+                    listOfPrices.add(list5.get(j).text());
                 }
                 break;
             case 2: //4Seasons
@@ -104,13 +103,13 @@ public class HTMLParser {
                 System.out.println(list1.size());
                 
                 for (int j = 0; j < list1.size(); j++) {
-                    //get quantity input value (3rd in list of inputs)
+                    //get quantity input value (4th in list of inputs)
                     Elements list0 = list1.get(j).getElementsByTag("input");
-                    listOfQty.add(list0.get(2).val());
-                    //pack size (first in ever 4 divs)
+                    listOfQty.add(list0.get(3).val());
+                    //pack size (first in every 4 divs)
                     listOfPacking.add(list2.get(j * 4).text());
-                    //price (third in every 4 divs)
-                    listOfPrices.add(list2.get(j * 4 + 2).text());
+                    //price (fourth in every 4 divs)
+                    listOfPrices.add(list2.get(j * 4 + 3).text());
                 }
             default:                
                 break;
@@ -119,6 +118,11 @@ public class HTMLParser {
         //check if null, meaning the document is wrongly attributed
         if (listOfNames.isEmpty() || listOfSKU.isEmpty() || listOfQty.isEmpty()
                 ||listOfPacking.isEmpty() || listOfPrices.isEmpty()) {
+            textArea.setText(textArea.getText() + "\n" + "ERROR: Names: " + listOfNames.isEmpty());
+            textArea.setText(textArea.getText() + "\n" + "ERROR: SKU: " + listOfSKU.isEmpty());
+            textArea.setText(textArea.getText() + "\n" + "ERROR: Qty: " + listOfQty.isEmpty());
+            textArea.setText(textArea.getText() + "\n" + "ERROR: Pack: " + listOfPacking.isEmpty());
+            textArea.setText(textArea.getText() + "\n" + "ERROR: Prices: " + listOfPrices.isEmpty());
             textArea.setText(textArea.getText() + "\n" + "ERROR: Source file not valid!");
             return null;
         }
